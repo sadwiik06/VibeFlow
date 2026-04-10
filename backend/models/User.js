@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
         fullName: { type:String, required:true},
         profilePicture: { type:String, default: '',},
         bio:{type:String, default: '',},
+        website: { type: String, default: '' },
         isPrivate: { type:Boolean, default: false},
         followers: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
         following: [{type: mongoose.Schema.Types.ObjectId, ref:'User'}],

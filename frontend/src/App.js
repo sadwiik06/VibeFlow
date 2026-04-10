@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
+import FollowRequestsPage from './pages/FollowRequestsPage';
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
             element={
               <PrivateRoute>
                 <EditProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/follow-requests"
+            element={
+              <PrivateRoute>
+                <FollowRequestsPage />
               </PrivateRoute>
             }
           />

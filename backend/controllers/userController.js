@@ -13,38 +13,59 @@ const getUserProfile = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Get followers and following counts/data
-        const follows = await Follow.find({
-            $or: [{ follower: user._id }, { following: user._id }]
-        }).populate('follower following', 'username profilePicture');
+        const isOwner = req.user?._id.toString() === user._id.toString();
 
-        const followers = follows.filter(f => f.following._id.toString() === user._id.toString()).map(f => f.follower);
-        const following = follows.filter(f => f.follower._id.toString() === user._id.toString()).map(f => f.following);
-
-        let isFollowing = false;
-        if (req.user) {
+        // Check current user's follow relationship with this profile
+        let followStatus = 'none'; // 'none', 'pending', 'accepted'
+        if (req.user && !isOwner) {
             const follow = await Follow.findOne({
                 follower: req.user._id,
                 following: user._id,
             });
-            isFollowing = !!follow;
+            if (follow) {
+                followStatus = follow.status; // 'pending' or 'accepted'
+            }
         }
+
+        const isFollowing = followStatus === 'accepted';
+        const canViewFullProfile = isOwner || !user.isPrivate || isFollowing;
 
         const postsCount = await Post.countDocuments({ user: user._id });
         const userData = user.toObject();
         userData.isFollowing = isFollowing;
+        userData.followStatus = followStatus;
         userData.postsCount = postsCount;
-        userData.followers = followers;
-        userData.following = following;
 
-        // Privacy check
-        if (user.isPrivate && !isFollowing && req.user?._id.toString() !== user._id.toString()) {
+        if (canViewFullProfile) {
+            // Full access — show followers/following lists
+            const follows = await Follow.find({
+                $or: [
+                    { follower: user._id, status: 'accepted' },
+                    { following: user._id, status: 'accepted' }
+                ]
+            }).populate('follower following', 'username profilePicture');
+
+            userData.followers = follows
+                .filter(f => f.following._id.toString() === user._id.toString())
+                .map(f => f.follower);
+            userData.following = follows
+                .filter(f => f.follower._id.toString() === user._id.toString())
+                .map(f => f.following);
+        } else {
+            // Private account, not following — hide everything
+            // Only show username, profile picture, and that it's private
+            const followersCount = await Follow.countDocuments({ following: user._id, status: 'accepted' });
+            const followingCount = await Follow.countDocuments({ follower: user._id, status: 'accepted' });
+
             userData.fullName = undefined;
             userData.bio = undefined;
             userData.website = undefined;
-            userData.postsCount = undefined;
+            userData.postsCount = postsCount; // Instagram shows post count even for private
             userData.followers = [];
             userData.following = [];
+            userData.followersCount = followersCount;
+            userData.followingCount = followingCount;
+            userData.isPrivateAndNotFollowing = true;
         }
 
         res.json(userData);
@@ -65,8 +86,17 @@ const updateProfile = async (req, res) => {
         user.bio = bio !== undefined ? bio : user.bio;
         user.website = website !== undefined ? website : user.website;
         
+        const wasPrivate = user.isPrivate;
         if (isPrivate !== undefined) {
             user.isPrivate = isPrivate === 'true' || isPrivate === true;
+        }
+
+        // If switching from private to public, auto-accept all pending requests
+        if (wasPrivate && !user.isPrivate) {
+            await Follow.updateMany(
+                { following: user._id, status: 'pending' },
+                { status: 'accepted' }
+            );
         }
 
         if (req.file) {
@@ -119,15 +149,98 @@ const followUser = async (req, res) => {
         });
 
         if (existingFollow) {
+            // Unfollow or cancel request
             await existingFollow.deleteOne();
-            res.json({ message: 'Unfollowed', isFollowing: false });
+            res.json({
+                message: existingFollow.status === 'pending' ? 'Request cancelled' : 'Unfollowed',
+                isFollowing: false,
+                followStatus: 'none',
+            });
         } else {
-            await Follow.create({ follower: currentUserId, following: targetUserId });
-            res.json({ message: 'Followed', isFollowing: true });
+            // New follow — pending for private accounts, accepted for public
+            const status = targetUser.isPrivate ? 'pending' : 'accepted';
+            await Follow.create({
+                follower: currentUserId,
+                following: targetUserId,
+                status,
+            });
+            res.json({
+                message: status === 'pending' ? 'Follow request sent' : 'Followed',
+                isFollowing: status === 'accepted',
+                followStatus: status,
+            });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-module.exports = { getUserProfile, updateProfile, followUser };
+// Get pending follow requests for the current user
+const getFollowRequests = async (req, res) => {
+    try {
+        const requests = await Follow.find({
+            following: req.user._id,
+            status: 'pending',
+        })
+            .populate('follower', 'username profilePicture fullName')
+            .sort({ createdAt: -1 });
+
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Accept a follow request
+const acceptFollowRequest = async (req, res) => {
+    try {
+        const requestId = req.params.requestId;
+        const follow = await Follow.findOne({
+            _id: requestId,
+            following: req.user._id,
+            status: 'pending',
+        });
+
+        if (!follow) {
+            return res.status(404).json({ message: 'Follow request not found' });
+        }
+
+        follow.status = 'accepted';
+        await follow.save();
+
+        res.json({ message: 'Follow request accepted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reject (delete) a follow request
+const rejectFollowRequest = async (req, res) => {
+    try {
+        const requestId = req.params.requestId;
+        const follow = await Follow.findOne({
+            _id: requestId,
+            following: req.user._id,
+            status: 'pending',
+        });
+
+        if (!follow) {
+            return res.status(404).json({ message: 'Follow request not found' });
+        }
+
+        await follow.deleteOne();
+
+        res.json({ message: 'Follow request rejected' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = {
+    getUserProfile,
+    updateProfile,
+    followUser,
+    getFollowRequests,
+    acceptFollowRequest,
+    rejectFollowRequest,
+};

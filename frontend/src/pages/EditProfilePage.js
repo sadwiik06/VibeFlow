@@ -70,8 +70,8 @@ const EditProfilePage = () => {
                 },
             });
             setUser({ ...user, ...res.data });
-            setSuccess('Profile updated successfully!');
-            setTimeout(() => navigate(`/profile/${user.username}`), 2000);
+            // Navigate immediately to profile page
+            navigate(`/profile/${user.username}`);
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to update profile');
         } finally {
