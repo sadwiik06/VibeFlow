@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema(
         profilePicture: { type:String, default: '',},
         bio:{type:String, default: '',},
         isPrivate: { type:Boolean, default: false},
+        followers: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+        following: [{type: mongoose.Schema.Types.ObjectId, ref:'User'}],
     },
     {timestamps: true}
 );

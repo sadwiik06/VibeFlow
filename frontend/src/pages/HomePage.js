@@ -1,14 +1,13 @@
 import React from 'react';
 import {useAuth} from '../context/AuthContext';
+import Feed from '../components/Feed';
 const HomePage = ()=>{
     const {user,logout} = useAuth();
     return (
         <div>
-            <h1> Welcome, {user?.fullName}!</h1>
-            <button onClick={logout}>Logout</button>
-            <p> This is your feed (coming soon)</p>
+            <Feed />
         </div>
     );
 };
 
-export default HomePage;
+export default HomePage;
