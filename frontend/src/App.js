@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import FollowRequestsPage from './pages/FollowRequestsPage';
+import ReelsPage from './pages/ReelsPage';
 
 function App() {
   return (
@@ -45,6 +46,14 @@ function App() {
             element={
               <PrivateRoute>
                 <FollowRequestsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/reels"
+            element={
+              <PrivateRoute>
+                <ReelsPage />
               </PrivateRoute>
             }
           />

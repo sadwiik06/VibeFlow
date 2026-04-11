@@ -2,17 +2,19 @@ const express = require('express');
 
 const {
     createPost,
-    getFeed,getUserPosts
+    getFeed,
+    getUserPosts,
+    getReels
 } = require('../controllers/postController');
 
-const {protect} = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
-const router  = express.Router();
+const router = express.Router();
 
-router.route('/') .post(protect, upload.single('media'),createPost);
+router.route('/').post(protect, upload.single('media'), createPost);
+router.get('/feed', protect, getFeed);
+router.get('/reels', protect, getReels);
+router.get('/user/:userId', protect, getUserPosts);
 
-router.get('/feed',protect,getFeed);
-router.get('/user/:userId',protect, getUserPosts);
 module.exports = router;
-

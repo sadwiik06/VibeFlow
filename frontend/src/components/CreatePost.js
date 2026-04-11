@@ -10,12 +10,19 @@ const CreatePost = ({ onPostCreated }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { user } = useAuth();
+    const [postType, setPostType] = useState('post');
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setMedia(file);
             setPreview(URL.createObjectURL(file));
+            // Auto-detect type from file
+            if (file.type.startsWith('video/')) {
+                setPostType('reel');
+            } else {
+                setPostType('post');
+            }
         }
     };
 
@@ -32,7 +39,7 @@ const CreatePost = ({ onPostCreated }) => {
         formData.append('media', media);
         formData.append('caption', caption);
         formData.append('location', location);
-        formData.append('type', media.type.startsWith('video/') ? 'reel' : 'post');
+        formData.append('type', postType);
 
         try {
             const token = localStorage.getItem('token');
@@ -67,10 +74,29 @@ const CreatePost = ({ onPostCreated }) => {
                         required
                     />
                 </div>
-                
+
+                <div style={{ marginBottom: '10px' }}>
+                    <label>
+                        <input
+                            type="radio"
+                            value="post"
+                            checked={postType === 'post'}
+                            onChange={() => setPostType('post')}
+                        /> Post
+                    </label>
+                    <label style={{ marginLeft: '10px' }}>
+                        <input
+                            type="radio"
+                            value="reel"
+                            checked={postType === 'reel'}
+                            onChange={() => setPostType('reel')}
+                        /> Reel
+                    </label>
+                </div>
+
                 {preview && (
                     <div style={{ marginBottom: '10px' }}>
-                        {media.type.startsWith('image/') ? (
+                        {media && media.type.startsWith('image/') ? (
                             <img src={preview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }} />
                         ) : (
                             <video src={preview} controls style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }} />

@@ -130,4 +130,23 @@ const getUserPosts = async (req, res) => {
     }
 };
 
-module.exports = { createPost, getFeed, getUserPosts };
+const getReels = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        const reels = await Post.find({ type: 'reel' })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate('user', 'username profilePicture');
+
+        const total = await Post.countDocuments({ type: 'reel' });
+        res.json({ reels, page, pages: Math.ceil(total / limit), total });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { createPost, getFeed, getUserPosts, getReels };
