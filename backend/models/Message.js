@@ -6,8 +6,10 @@ const messageSchema = new mongoose.Schema(
         sender: {type: mongoose.Schema.Types.ObjectId, ref:'User', required: true},
         text : {type: String, required: true},
         read: {type:Boolean, default:false},
-    
-
+        mediaType: { type: String, enum: ['text', 'voice'], default: 'text' },
+        mediaUrl: { type: String, default: '' },
+        duration: { type: Number },
+        read: { type: Boolean, default: false },
     },
     {timestamps: true}
 );

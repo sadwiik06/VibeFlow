@@ -35,7 +35,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/likes', require('./routes/likeRoutes'));
 app.use('/api/comments', require('./routes/commentRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
-
+app.use('/api/guilds', require('./routes/guildRoutes'));
 app.use(require('./middleware/errorMiddleware'));
 
 const PORT = process.env.PORT || 5000;

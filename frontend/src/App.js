@@ -11,6 +11,9 @@ import EditProfilePage from './pages/EditProfilePage';
 import FollowRequestsPage from './pages/FollowRequestsPage';
 import ReelsPage from './pages/ReelsPage';
 import ChatPage from './pages/ChatPage';
+import GuildsPage from './pages/GuildsPage';
+import GuildDetailPage from './pages/GuildDetailPage';
+import JoinGuildPage from './pages/JoinGuildPage';
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/guilds" element={<PrivateRoute><GuildsPage /></PrivateRoute>} />
+<Route path="/guilds/:guildId" element={<PrivateRoute><GuildDetailPage /></PrivateRoute>} />
+<Route path="/guilds/join/:token" element={<PrivateRoute><JoinGuildPage /></PrivateRoute>} />
             <Route
               path="/follow-requests"
               element={

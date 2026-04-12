@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
+const Guild = require('../models/Guild');
+const GuildMessage = require('../models/GuildMessage');
 
 const socketHandler = (io) => {
     io.use(async (socket, next) => {
@@ -108,6 +110,38 @@ const socketHandler = (io) => {
 
         socket.on('disconnect', () => {
             console.log(`User disconnected: ${socket.user.username}`);
+        });
+        
+        socket.on('join guild', (guildId) => {
+            socket.join(`guild:${guildId}`);
+            console.log(`${socket.user.username} joined guild ${guildId}`);
+        });
+
+        socket.on('leave guild', (guildId) => {
+            socket.leave(`guild:${guildId}`);
+        });
+
+        socket.on('send guild message', async (data, callback) => {
+            try {
+                const { guildId, text } = data;
+                const senderId = socket.user._id;
+                const guild = await Guild.findById(guildId);
+                if (!guild) return callback({ error: 'Guild not found' });
+                if (!guild.members.includes(senderId)) {
+                    return callback({ error: 'Not a member' });
+                }
+                const message = await GuildMessage.create({
+                    guild: guildId,
+                    sender: senderId,
+                    text,
+                });
+                await message.populate('sender', 'username profilePicture');
+                // emit to the guild room, skipping space typo
+                io.to(`guild:${guildId}`).emit('new guild message', message);
+                callback({ success: true, message });
+            } catch (error) {
+                callback({ error: error.message });
+            }
         });
     });
 };
