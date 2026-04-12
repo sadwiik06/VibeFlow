@@ -4,11 +4,24 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
+const http = require('http');
+const socketIo = require('socket.io');
+const socketHandler = require('./sockets/socketHandler');
 
 dotenv.config();
 connectDB();
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+});
+
+socketHandler(io);
 
 app.use(helmet());
 app.use(cors());
@@ -21,8 +34,9 @@ app.use('/api/posts', require('./routes/postRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/likes', require('./routes/likeRoutes'));
 app.use('/api/comments', require('./routes/commentRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
 
 app.use(require('./middleware/errorMiddleware'));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

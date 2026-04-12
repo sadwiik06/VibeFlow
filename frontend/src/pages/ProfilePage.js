@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 const ProfilePage = () => {
     const { username } = useParams();
     const { user: currentUser } = useAuth();
+    const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [posts, setPosts] = useState([]);
     const [isAccountPrivate, setIsAccountPrivate] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [followStatus, setFollowStatus] = useState('none'); // 'none', 'pending', 'accepted'
+    const [followStatus, setFollowStatus] = useState('none');
     const [followLoading, setFollowLoading] = useState(false);
+
+    const handleMessage = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.post(
+                'http://localhost:5000/api/chat/conversations',
+                { userId: profile._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            navigate('/chat', { state: { conversationId: res.data._id } });
+        } catch (err) {
+            console.error('Failed to start conversation', err);
+        }
+    };
 
     const fetchProfile = async () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            
+
             const res = await axios.get(`http://localhost:5000/api/users/${username}`, config);
             setProfile(res.data);
             setFollowStatus(res.data.followStatus || 'none');
@@ -52,7 +67,6 @@ const ProfilePage = () => {
             setFollowStatus(res.data.followStatus);
 
             if (res.data.followStatus === 'accepted') {
-                // Became a follower — update follower list & re-fetch posts
                 setProfile(prev => ({
                     ...prev,
                     followers: [...(prev.followers || []), { _id: currentUser._id, username: currentUser.username }]
@@ -63,19 +77,16 @@ const ProfilePage = () => {
                 setPosts(postRes.data.posts || []);
                 setIsAccountPrivate(postRes.data.isPrivate || false);
             } else if (res.data.followStatus === 'none') {
-                // Unfollowed or cancelled request
                 setProfile(prev => ({
                     ...prev,
                     followers: (prev.followers || []).filter(f => f._id !== currentUser._id)
                 }));
-                // Re-fetch posts — might lose access if private
                 const postRes = await axios.get(
                     `http://localhost:5000/api/posts/user/${profile._id}`, config
                 );
                 setPosts(postRes.data.posts || []);
                 setIsAccountPrivate(postRes.data.isPrivate || false);
             }
-            // 'pending' — no post changes needed
         } catch (err) {
             console.error('[handleFollow] error:', err.response?.data || err.message);
         } finally {
@@ -118,9 +129,9 @@ const ProfilePage = () => {
     return (
         <div style={{ maxWidth: '935px', margin: '0 auto', padding: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px', padding: '30px 0', borderBottom: '1px solid #dbdbdb' }}>
-                <img 
+                <img
                     src={profile.profilePicture || '/default-avatar.png'}
-                    alt={profile.username} 
+                    alt={profile.username}
                     style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', marginRight: '80px' }}
                 />
                 <div style={{ flex: 1 }}>
@@ -138,16 +149,21 @@ const ProfilePage = () => {
                                 </button>
                             </Link>
                         ) : (
-                            <button 
-                                onClick={handleFollow} 
-                                disabled={followLoading}
-                                style={getFollowButtonStyle()}
-                            >
-                                {getFollowButtonText()}
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleFollow}
+                                    disabled={followLoading}
+                                    style={getFollowButtonStyle()}
+                                >
+                                    {getFollowButtonText()}
+                                </button>
+                                <button onClick={handleMessage} style={{ marginLeft: '10px', padding: '5px 24px', borderRadius: '4px', border: '1px solid #dbdbdb', backgroundColor: 'transparent', fontWeight: '600', cursor: 'pointer' }}>
+                                    Message
+                                </button>
+                            </>
                         )}
                     </div>
-                    
+
                     <div style={{ display: 'flex', gap: '40px', marginBottom: '20px' }}>
                         <span><strong>{isPrivateAndLocked ? profile.postsCount : posts.length}</strong> posts</span>
                         {isPrivateAndLocked ? (
@@ -162,7 +178,7 @@ const ProfilePage = () => {
                             </>
                         )}
                     </div>
-                    
+
                     {!isPrivateAndLocked && (
                         <div>
                             <p style={{ fontWeight: '600', margin: '0 0 5px 0' }}>{profile.fullName}</p>
@@ -179,7 +195,7 @@ const ProfilePage = () => {
 
             {isAccountPrivate || isPrivateAndLocked ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px', borderTop: '1px solid #dbdbdb' }}>
-                    <div style={{ 
+                    <div style={{
                         width: '80px', height: '80px', borderRadius: '50%', border: '2px solid #262626',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 16px', fontSize: '36px'
@@ -195,14 +211,14 @@ const ProfilePage = () => {
                         {posts.map(post => (
                             <div key={post._id} style={{ position: 'relative', width: '100%', paddingBottom: '100%', overflow: 'hidden' }}>
                                 {post.type === 'post' ? (
-                                    <img 
-                                        src={post.mediaUrl} 
-                                        alt="" 
+                                    <img
+                                        src={post.mediaUrl}
+                                        alt=""
                                         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                                     />
                                 ) : (
-                                    <video 
-                                        src={post.mediaUrl} 
+                                    <video
+                                        src={post.mediaUrl}
                                         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                                     />
                                 )}

@@ -236,6 +236,26 @@ const rejectFollowRequest = async (req, res) => {
     }
 };
 
+const searchUsers = async (req, res) => {
+    try {
+        const query = req.query.q;
+        if (!query) {
+            return res.json([]);
+        }
+        const users = await User.find({
+            $or: [
+                { username: { $regex: query, $options: 'i' } },
+                { fullName: { $regex: query, $options: 'i' } },
+            ],
+        })
+            .select('username fullName profilePicture')
+            .limit(10);
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getUserProfile,
     updateProfile,
@@ -243,4 +263,5 @@ module.exports = {
     getFollowRequests,
     acceptFollowRequest,
     rejectFollowRequest,
+    searchUsers,
 };
