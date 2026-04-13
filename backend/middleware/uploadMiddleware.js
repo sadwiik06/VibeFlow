@@ -2,8 +2,8 @@ const multer = require('multer');
 
 const storage = multer.memoryStorage();
 
-const fileFilter = (req,file,cb)=> {
-    const allowedTypes = /jpeg|jpg|png|gif|mp4|mov|avi|mkv/;
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif|mp4|mov|avi|mkv|mp3|wav|ogg|webm|m4a/;
     const extname = allowedTypes.test(file.originalname.toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     if(mimetype && extname){

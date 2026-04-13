@@ -14,7 +14,7 @@ import ChatPage from './pages/ChatPage';
 import GuildsPage from './pages/GuildsPage';
 import GuildDetailPage from './pages/GuildDetailPage';
 import JoinGuildPage from './pages/JoinGuildPage';
-
+import Layout from './components/Layout';
 function App() {
   return (
     <BrowserRouter>

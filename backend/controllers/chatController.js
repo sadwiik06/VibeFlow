@@ -1,6 +1,7 @@
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const User = require('../models/User');
+const cloudinary = require('../config/cloudinary');
 
 const getOrCreateConversation = async (req, res) => {
     try {
@@ -23,6 +24,54 @@ const getOrCreateConversation = async (req, res) => {
             await conversation.populate('participants', 'username fullName profilePicture');
         }
         res.json(conversation);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const sendVoiceMessage = async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const senderId = req.user._id;
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'Audio file is required' });
+        }
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) {
+            return res.status(404).json({ message: 'Conversation not found' });
+        }
+
+        if (!conversation.participants.includes(senderId)) {
+            return res.status(403).json({ message: 'Not a participant' });
+        }
+
+        const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: 'SocialMedia/voice-messages', resource_type: 'video' },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            uploadStream.end(req.file.buffer);
+        });
+
+        const message = await Message.create({
+            conversation: conversationId,
+            sender: senderId,
+            text: 'Voice Message',
+            mediaType: 'voice',
+            mediaUrl: result.secure_url,
+            duration: req.body.duration || 0,
+        });
+
+        conversation.lastMessage = message._id;
+        await conversation.save();
+        await message.populate('sender', 'username fullName profilePicture');
+
+        res.status(201).json(message);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -91,4 +140,5 @@ module.exports = {
     getUserConversations,
     getMessages,
     sendMessage,
+    sendVoiceMessage
 };

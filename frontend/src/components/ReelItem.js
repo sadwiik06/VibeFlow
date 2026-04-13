@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import './ReelItem.css';
 
-const ReelItem = ({ reel }) => {
+const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
     const { user } = useAuth();
     const [liked, setLiked] = useState(false);
     const [likesCount, setLikesCount] = useState(0);
@@ -22,33 +22,19 @@ const ReelItem = ({ reel }) => {
         fetchComments();
     }, [reel._id]);
 
+    // Manage play/pause based on isActive prop
     useEffect(() => {
-        const options = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.6,
-        };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const playPromise = videoRef.current?.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(error => {
-                            console.log("Autoplay was prevented:", error);
-                        });
-                    }
-                    setIsPlaying(true);
-                } else {
-                    videoRef.current?.pause();
-                    setIsPlaying(false);
-                }
-            });
-        }, options);
-        if (videoRef.current) observer.observe(videoRef.current);
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
+        if (isActive) {
+            const playPromise = videoRef.current?.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => console.log("Autoplay was prevented"));
+            }
+            setIsPlaying(true);
+        } else {
+            videoRef.current?.pause();
+            setIsPlaying(false);
+        }
+    }, [isActive]);
 
     const fetchLikes = async () => {
         try {
@@ -110,12 +96,22 @@ const ReelItem = ({ reel }) => {
     };
 
     const togglePlay = () => {
-        if (videoRef.current.paused) {
+        if (!videoRef.current) return;
+        
+        const nextPlaying = videoRef.current.paused;
+        if (nextPlaying) {
             videoRef.current.play();
             setIsPlaying(true);
         } else {
             videoRef.current.pause();
             setIsPlaying(false);
+        }
+
+        // Sync to guest/host
+        if (watchSessionId && onSyncAction) {
+            onSyncAction(nextPlaying ? 'play' : 'pause', {
+                timestamp: videoRef.current.currentTime
+            });
         }
     };
 
@@ -126,7 +122,7 @@ const ReelItem = ({ reel }) => {
                 src={reel.mediaUrl}
                 loop
                 playsInline
-                muted
+                muted // Mute for autoplay support
                 onClick={togglePlay}
                 className="reel-video"
             />
@@ -139,11 +135,14 @@ const ReelItem = ({ reel }) => {
             <div className="reel-overlay">
                 <div className="reel-info">
                     <Link to={`/profile/${reel.user.username}`} className="user-link">
-                        <img src={reel.user.profilePicture || '/default-avatar.png'} alt="" />
+                        <img 
+                            src={reel.user.profilePicture || '/default-avatar.png'} 
+                            alt="" 
+                            style={{width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover'}}
+                        />
                         <span>{reel.user.username}</span>
                     </Link>
                     <p className="caption">{reel.caption}</p>
-                    {reel.location && <p className="location">📍 {reel.location}</p>}
                 </div>
 
                 <div className="reel-side-actions">
@@ -155,7 +154,6 @@ const ReelItem = ({ reel }) => {
                         💬
                         <span>{comments.length}</span>
                     </button>
-                    <button className="action-btn">📤</button>
                 </div>
             </div>
 
@@ -168,9 +166,7 @@ const ReelItem = ({ reel }) => {
                     <div className="comments-list">
                         {comments.map(comment => (
                             <div key={comment._id} className="comment">
-                                <Link to={`/profile/${comment.user.username}`}>
-                                    <strong>{comment.user.username}</strong>
-                                </Link>
+                                <strong>{comment.user.username}</strong>
                                 <span> {comment.text}</span>
                             </div>
                         ))}
