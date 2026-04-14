@@ -38,12 +38,14 @@ const ChatWindow = ({ conversation }) => {
       socket.off('user typing');
       socket.off('messages read');
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversation._id, socket]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     if (socket && messages.some(m => !m.read && m.sender._id !== user._id))
       socket.emit('mark read', { conversationId: conversation._id });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   const fetchMessages = async () => {

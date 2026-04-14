@@ -9,7 +9,7 @@ const GuildChat = ({ guildId }) => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
-  const { user } = useAuth();
+  useAuth();
   const { socket } = useChat();
   const token = localStorage.getItem('token');
 
@@ -25,6 +25,7 @@ const GuildChat = ({ guildId }) => {
     return () => {
       if (socket) socket.off('new guild message');
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guildId, socket]);
 
   const fetchMessages = async () => {

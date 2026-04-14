@@ -50,6 +50,7 @@ const CreatePost = ({ onPostCreated, forceOpen, onClose, hideTrigger }) => {
   useEffect(() => {
     if (forceOpen) setIsOpen(true);
     else if (!forceOpen && isOpen) resetAll();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceOpen]);
 
   const handleFile = (file) => {

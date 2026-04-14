@@ -19,10 +19,10 @@ const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
     const videoRef = useRef(null);
     const token = localStorage.getItem('token');
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchLikes();
         fetchComments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reel._id]);
 
     // Manage play/pause based on isActive prop
