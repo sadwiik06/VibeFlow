@@ -45,7 +45,7 @@ app.set('io', io);
 
 app.use(helmet());
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // handle preflight for all routes
+app.options(/(.*)/, cors(corsOptions)); // handle preflight for all routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
