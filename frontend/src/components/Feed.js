@@ -4,6 +4,7 @@ import Post from './Post';
 import CreatePost from './CreatePost';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
+import API_BASE_URL from '../apiConfig';
 
 /* ─── Skeleton ─── */
 const PostSkeleton = ({ delay = 0 }) => (
@@ -61,7 +62,7 @@ const Feed = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/posts/feed?page=${pageNum}&limit=5`,
+        `${API_BASE_URL}/api/posts/feed?page=${pageNum}&limit=5`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (pageNum === 1) setPosts(res.data.posts);

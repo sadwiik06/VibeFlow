@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Post from '../components/Post';
+import API_BASE_URL from '../apiConfig';
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -26,10 +27,10 @@ const ProfilePage = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/${username}`, config);
+      const res = await axios.get(`${API_BASE_URL}/api/users/${username}`, config);
       setProfile(res.data);
       setFollowStatus(res.data.followStatus || 'none');
-      const postRes = await axios.get(`http://localhost:5000/api/posts/user/${res.data._id}`, config);
+      const postRes = await axios.get(`${API_BASE_URL}/api/posts/user/${res.data._id}`, config);
       setPosts(postRes.data.posts || []);
       setIsAccountPrivate(postRes.data.isPrivate || false);
     } catch (err) {
@@ -49,16 +50,16 @@ const ProfilePage = () => {
     if (!currentUser) return;
     setFollowLoading(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/users/${profile._id}/follow`, {}, config);
+      const res = await axios.post(`${API_BASE_URL}/api/users/${profile._id}/follow`, {}, config);
       setFollowStatus(res.data.followStatus);
       if (res.data.followStatus === 'accepted') {
         setProfile(prev => ({ ...prev, followers: [...(prev.followers || []), { _id: currentUser._id }] }));
-        const postRes = await axios.get(`http://localhost:5000/api/posts/user/${profile._id}`, config);
+        const postRes = await axios.get(`${API_BASE_URL}/api/posts/user/${profile._id}`, config);
         setPosts(postRes.data.posts || []);
         setIsAccountPrivate(postRes.data.isPrivate || false);
       } else if (res.data.followStatus === 'none') {
         setProfile(prev => ({ ...prev, followers: (prev.followers || []).filter(f => f._id !== currentUser._id) }));
-        const postRes = await axios.get(`http://localhost:5000/api/posts/user/${profile._id}`, config);
+        const postRes = await axios.get(`${API_BASE_URL}/api/posts/user/${profile._id}`, config);
         setPosts(postRes.data.posts || []);
         setIsAccountPrivate(postRes.data.isPrivate || false);
       }
@@ -68,7 +69,7 @@ const ProfilePage = () => {
 
   const handleMessage = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/chat/conversations', { userId: profile._id }, config);
+      const res = await axios.post(`${API_BASE_URL}/api/chat/conversations`, { userId: profile._id }, config);
       navigate('/chat', { state: { conversationId: res.data._id } });
     } catch (err) { console.error(err); }
   };

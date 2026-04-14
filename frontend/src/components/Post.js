@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 
 /* ─── SVG Icons (pixel-perfect, like Instagram's) ─── */
 const HeartIcon = ({ filled, style }) =>
@@ -118,7 +119,7 @@ const Post = ({ post, onDelete }) => {
 
   const fetchLikes = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/likes/${post._id}`);
+      const res = await axios.get(`${API_BASE_URL}/api/likes/${post._id}`);
       setLikesCount(res.data.length);
       if (user) setLiked(res.data.some(l => l.user._id === user._id));
     } catch {}
@@ -126,7 +127,7 @@ const Post = ({ post, onDelete }) => {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/post/${post._id}`);
+      const res = await axios.get(`${API_BASE_URL}/api/comments/post/${post._id}`);
       setComments(res.data);
     } catch {}
   };
@@ -136,7 +137,7 @@ const Post = ({ post, onDelete }) => {
     setLikeLoading(true);
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/likes/${post._id}`, {},
+        `${API_BASE_URL}/api/likes/${post._id}`, {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setLiked(res.data.liked);
@@ -163,7 +164,7 @@ const Post = ({ post, onDelete }) => {
     setLoading(true);
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/comments/${post._id}`,
+        `${API_BASE_URL}/api/comments/${post._id}`,
         { text: commentText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -174,7 +175,7 @@ const Post = ({ post, onDelete }) => {
 
   const handleDeleteComment = async (cId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/comments/${cId}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${API_BASE_URL}/api/comments/${cId}`, { headers: { Authorization: `Bearer ${token}` } });
       setComments(p => p.filter(c => c._id !== cId));
     } catch {}
   };
@@ -192,7 +193,7 @@ const Post = ({ post, onDelete }) => {
   const handleDeletePost = async () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${post._id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${API_BASE_URL}/api/posts/${post._id}`, { headers: { Authorization: `Bearer ${token}` } });
       if (onDelete) onDelete(post._id);
     } catch (err) {
       alert('Failed to delete post');

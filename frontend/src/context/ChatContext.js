@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import API_BASE_URL from '../apiConfig';
 
 const ChatContext = createContext();
 
@@ -12,9 +13,8 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         if (user) {
-            const token = localStorage.getItem('token');
-            const newSocket = io('http://localhost:5000', {
-                auth: { token },
+            const newSocket = io(API_BASE_URL, {
+                query: { userId: user._id },
             });
 
             newSocket.on('connect', () => {

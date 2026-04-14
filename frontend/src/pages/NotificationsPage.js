@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 import { Link } from 'react-router-dom';
 
 const NotificationsPage = () => {
@@ -9,7 +10,7 @@ const NotificationsPage = () => {
 
   const fetchFollowRequests = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/users/follow-requests', {
+      const res = await axios.get(`${API_BASE_URL}/api/users/follow-requests`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRequests(res.data);
@@ -26,7 +27,7 @@ const NotificationsPage = () => {
 
   const handleAction = async (requestId, action) => {
     try {
-      await axios.post(`http://localhost:5000/api/users/follow-requests/${requestId}/${action}`, {}, {
+      await axios.post(`${API_BASE_URL}/api/users/follow-requests/${requestId}/${action}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRequests(requests.filter(req => req._id !== requestId));

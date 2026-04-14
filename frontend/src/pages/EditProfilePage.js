@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 
 const EditProfilePage = () => {
     const { user, setUser } = useAuth();
@@ -63,7 +64,7 @@ const EditProfilePage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.put('http://localhost:5000/api/users/profile', data, {
+            const res = await axios.put(`${API_BASE_URL}/api/users/profile`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`

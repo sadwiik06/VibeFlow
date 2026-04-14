@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 import Feed from '../components/Feed';
 
 /* ─── Suggestions Sidebar ─── */
@@ -140,13 +141,13 @@ const HomePage = () => {
         if (!token || !user) return;
 
         // Fetch full profile info for stats
-        const profileRes = await axios.get(`http://localhost:5000/api/users/${user.username}`, {
+        const profileRes = await axios.get(`${API_BASE_URL}/api/users/${user.username}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProfile(profileRes.data);
 
         // Fetch suggested users
-        const sugRes = await axios.get('http://localhost:5000/api/users/suggestions', {
+        const sugRes = await axios.get(`${API_BASE_URL}/api/users/suggestions`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSuggestions(sugRes.data);

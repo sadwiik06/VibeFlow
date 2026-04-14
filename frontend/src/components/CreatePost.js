@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 
 const PlusIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -89,7 +90,7 @@ const CreatePost = ({ onPostCreated, forceOpen, onClose, hideTrigger }) => {
     
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/posts', fd, {
+      const res = await axios.post(`${API_BASE_URL}/api/posts`, fd, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
       });
       onPostCreated(res.data);

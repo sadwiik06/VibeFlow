@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 const SearchBar = () => {
     const [query, setQuery] = useState('');
@@ -26,7 +27,7 @@ const SearchBar = () => {
             }
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`http://localhost:5000/api/users/search?q=${query}`, {
+                const res = await axios.get(`${API_BASE_URL}/api/users/search?q=${query}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setResults(res.data);

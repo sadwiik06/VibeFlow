@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: process.env.CLIENT_URL || 'http://localhost:3000',
         methods: ['GET', 'POST'],
         credentials: true,
     },
@@ -25,7 +25,10 @@ socketHandler(io);
 app.set('io', io);
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));

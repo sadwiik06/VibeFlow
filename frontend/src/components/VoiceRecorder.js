@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 const VoiceRecorder = ({ conversationId, onVoiceSent }) => {
     const [isRecording, setIsRecording] = useState(false);
@@ -70,7 +71,7 @@ const VoiceRecorder = ({ conversationId, onVoiceSent }) => {
             formData.append('duration', recordingTime);
             
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/chat/messages/voice/${conversationId}`, formData, {
+            const res = await axios.post(`${API_BASE_URL}/api/chat/messages/voice/${conversationId}`, formData, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'

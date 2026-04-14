@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 import './ReelItem.css';
 
 const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
@@ -39,7 +40,7 @@ const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
 
     const fetchLikes = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/likes/${reel._id}`);
+            const res = await axios.get(`${API_BASE_URL}/api/likes/${reel._id}`);
             setLikesCount(res.data.length);
             if (user) {
                 setLiked(res.data.some(like => like.user._id === user._id));
@@ -51,7 +52,7 @@ const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
 
     const fetchComments = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/comments/post/${reel._id}`);
+            const res = await axios.get(`${API_BASE_URL}/api/comments/post/${reel._id}`);
             setComments(res.data);
         } catch (err) {
             console.error('Error fetching comments', err);
@@ -63,7 +64,7 @@ const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
         setLikeLoading(true);
         try {
             const res = await axios.post(
-                `http://localhost:5000/api/likes/${reel._id}`,
+                `${API_BASE_URL}/api/likes/${reel._id}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -82,7 +83,7 @@ const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
         setLoading(true);
         try {
             const res = await axios.post(
-                `http://localhost:5000/api/comments/${reel._id}`,
+                `${API_BASE_URL}/api/comments/${reel._id}`,
                 { text: commentText },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

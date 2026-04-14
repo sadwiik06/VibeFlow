@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 import { useChat } from '../context/ChatContext';
 import ConversationList from '../components/ConversationList';
 import ChatWindow from '../components/ChatWindow';
@@ -31,7 +32,7 @@ const ChatPage = () => {
 
   const fetchConversations = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/chat/conversations', {
+      const res = await axios.get(`${API_BASE_URL}/api/chat/conversations`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setConversations(res.data);
@@ -43,7 +44,7 @@ const ChatPage = () => {
 
   const startNewConversation = async (userId) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/chat/conversations', { userId }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post(`${API_BASE_URL}/api/chat/conversations`, { userId }, { headers: { Authorization: `Bearer ${token}` } });
       if (!conversations.find(c => c._id === res.data._id)) setConversations([res.data, ...conversations]);
       setSelectedConversation(res.data);
     } catch (err) { console.error(err); }

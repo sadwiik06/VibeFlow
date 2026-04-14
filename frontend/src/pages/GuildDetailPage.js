@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 import { useChat } from '../context/ChatContext';
 import GuildChat from '../components/GuildChat';
 import GuildMembers from '../components/GuildMembers';
@@ -46,7 +47,7 @@ const GuildDetailPage = () => {
 
   const fetchGuild = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/guilds/${guildId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_BASE_URL}/api/guilds/${guildId}`, { headers: { Authorization: `Bearer ${token}` } });
       setGuild(res.data);
     } catch { setError('Guild not found or access denied.'); }
     finally { setLoading(false); }
@@ -66,7 +67,7 @@ const GuildDetailPage = () => {
 
   const handleJoin = async () => {
     try {
-      await axios.post(`http://localhost:5000/api/guilds/${guildId}/join`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${API_BASE_URL}/api/guilds/${guildId}/join`, {}, { headers: { Authorization: `Bearer ${token}` } });
       fetchGuild();
     } catch (err) { alert(err.response?.data?.message || 'Failed to join'); }
   };
@@ -74,7 +75,7 @@ const GuildDetailPage = () => {
   const handleLeave = async () => {
     if (!window.confirm('Leave this guild?')) return;
     try {
-      await axios.post(`http://localhost:5000/api/guilds/${guildId}/leave`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${API_BASE_URL}/api/guilds/${guildId}/leave`, {}, { headers: { Authorization: `Bearer ${token}` } });
       navigate('/guilds');
     } catch (err) { alert(err.response?.data?.message || 'Failed to leave'); }
   };

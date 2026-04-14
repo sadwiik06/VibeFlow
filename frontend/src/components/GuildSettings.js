@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -50,7 +51,7 @@ const GuildSettings = ({ guild, onUpdate }) => {
         if (coverImage) data.append('coverImage', coverImage);
 
         try {
-            await axios.put(`http://localhost:5000/api/guilds/${guild._id}`, data, {
+            await axios.put(`${API_BASE_URL}/api/guilds/${guild._id}`, data, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
             });
             onUpdate();
@@ -68,7 +69,7 @@ const GuildSettings = ({ guild, onUpdate }) => {
 
         setLoading(true);
         try {
-            await axios.put(`http://localhost:5000/api/guilds/${guild._id}/transfer`, 
+            await axios.put(`${API_BASE_URL}/api/guilds/${guild._id}/transfer`, 
                 { newOwnerId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -86,7 +87,7 @@ const GuildSettings = ({ guild, onUpdate }) => {
 
         setLoading(true);
         try {
-            await axios.delete(`http://localhost:5000/api/guilds/${guild._id}`, {
+            await axios.delete(`${API_BASE_URL}/api/guilds/${guild._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Guild deleted.');

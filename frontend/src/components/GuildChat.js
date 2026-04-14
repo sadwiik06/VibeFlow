@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 import { useChat } from '../context/ChatContext';
 
 const GuildChat = ({ guildId }) => {
@@ -28,7 +29,7 @@ const GuildChat = ({ guildId }) => {
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/guilds/${guildId}/messages`, {
+      const res = await axios.get(`${API_BASE_URL}/api/guilds/${guildId}/messages`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessages(res.data);

@@ -28,7 +28,6 @@ const AppContent = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       
-      {/* Root route: Shows Landing if guest, Home if auth */}
       <Route path="/" element={
         user ? (
           <PrivateRoute>

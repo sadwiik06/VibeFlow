@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 const GuildMembers = ({ guild, onRefresh, canManage }) => {
   const [loading, setLoading] = useState(false);
@@ -8,7 +9,7 @@ const GuildMembers = ({ guild, onRefresh, canManage }) => {
   const handleRequest = async (userId, action) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:5000/api/guilds/${guild._id}/requests/${userId}`, 
+      await axios.put(`${API_BASE_URL}/api/guilds/${guild._id}/requests/${userId}`, 
         { action },
         { headers: { Authorization: `Bearer ${token}` } }
       );

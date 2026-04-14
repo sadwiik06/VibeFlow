@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 
 const ACCENT_PALETTES = [
   { bg: '#EEE0FF', text: '#6B21A8' },
@@ -68,14 +69,14 @@ const GuildsPage = () => {
 
   const fetchGuilds = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/guilds', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_BASE_URL}/api/guilds`, { headers: { Authorization: `Bearer ${token}` } });
       setGuilds(res.data);
     } catch (err) { } finally { setLoading(false); }
   };
 
   const fetchMyGuilds = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/guilds/my', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_BASE_URL}/api/guilds/my`, { headers: { Authorization: `Bearer ${token}` } });
       setMyGuilds(res.data);
     } catch (err) { }
   };
@@ -84,7 +85,7 @@ const GuildsPage = () => {
     e.preventDefault();
     setCreating(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/guilds', form, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post(`${API_BASE_URL}/api/guilds`, form, { headers: { Authorization: `Bearer ${token}` } });
       navigate(`/guilds/${res.data._id}`);
     } catch (err) { alert(err.response?.data?.message || 'Failed'); } finally { setCreating(false); }
   };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 const FollowRequestsPage = () => {
     const [requests, setRequests] = useState([]);
@@ -11,7 +12,7 @@ const FollowRequestsPage = () => {
     const fetchRequests = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/users/follow-requests', {
+            const res = await axios.get(`${API_BASE_URL}/api/users/follow-requests`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setRequests(res.data);
@@ -31,7 +32,7 @@ const FollowRequestsPage = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://localhost:5000/api/users/follow-requests/${requestId}/accept`,
+                `${API_BASE_URL}/api/users/follow-requests/${requestId}/accept`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -48,7 +49,7 @@ const FollowRequestsPage = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://localhost:5000/api/users/follow-requests/${requestId}/reject`,
+                `${API_BASE_URL}/api/users/follow-requests/${requestId}/reject`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );

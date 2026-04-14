@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 const JoinGuildPage = () => {
     const { token } = useParams();
@@ -12,7 +13,7 @@ const JoinGuildPage = () => {
         const join = async () => {
             try {
                 const authToken = localStorage.getItem('token');
-                const res = await axios.get(`http://localhost:5000/api/guilds/join/${token}`, {
+                const res = await axios.get(`${API_BASE_URL}/api/guilds/join/${token}`, {
                     headers: { Authorization: `Bearer ${authToken}` }
                 });
                 

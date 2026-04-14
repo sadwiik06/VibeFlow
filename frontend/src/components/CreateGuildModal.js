@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 const CreateGuildModal = ({ onClose, onCreated }) => {
 
@@ -42,7 +43,7 @@ const CreateGuildModal = ({ onClose, onCreated }) => {
         
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:5000/api/guilds', data, {
+            const res = await axios.post(`${API_BASE_URL}/api/guilds`, data, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
             });
             onCreated(res.data);

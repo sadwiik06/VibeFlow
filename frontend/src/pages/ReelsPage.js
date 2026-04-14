@@ -3,6 +3,7 @@ import axios from 'axios';
 import ReelItem from '../components/ReelItem';
 import { useChat } from '../context/ChatContext';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 
 const ReelsPage = () => {
   const [reels, setReels] = useState([]);
@@ -32,7 +33,7 @@ const ReelsPage = () => {
   const fetchReels = useCallback(async (pageNum = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/reels?page=${pageNum}&limit=10`,
+        `${API_BASE_URL}/api/reels?page=${pageNum}&limit=10`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = res.data.reels || res.data;

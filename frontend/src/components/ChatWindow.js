@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../apiConfig';
 import { useChat } from '../context/ChatContext';
 import VoiceRecorder from './VoiceRecorder';
 
@@ -47,7 +48,7 @@ const ChatWindow = ({ conversation }) => {
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/chat/conversations/${conversation._id}/messages`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_BASE_URL}/api/chat/conversations/${conversation._id}/messages`, { headers: { Authorization: `Bearer ${token}` } });
       setMessages(res.data);
     } catch {}
     finally { setLoading(false); }
