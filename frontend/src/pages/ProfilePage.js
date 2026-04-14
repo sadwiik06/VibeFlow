@@ -369,8 +369,7 @@ const ProfilePage = () => {
                 <div
                   key={post._id}
                   className="profile-grid-item"
-                  onMouseEnter={() => setHoveredPost(post._id)}
-                  onMouseLeave={() => setHoveredPost(null)}
+
                   onClick={() => setSelectedPost(post)}
                 >
                   {post.type === 'post' && !post.mediaUrl.includes('/video/')
