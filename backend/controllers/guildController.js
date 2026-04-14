@@ -23,10 +23,8 @@ const createGuild = async (req, res) => {
             coverImage = result.secure_url;
         }
         
-        let inviteToken = null;
-        if (type === 'private') {
-            inviteToken = crypto.randomBytes(20).toString('hex');
-        }
+        // Always generate an invite token to avoid duplicate null keys and allow sharing
+        const inviteToken = crypto.randomBytes(20).toString('hex');
         
         const guild = await Guild.create({
             name, description, topic, type, owner: req.user._id, coverImage, inviteToken, members: [req.user._id],
@@ -274,9 +272,11 @@ const updateGuild = async (req, res) => {
         if (topic) guild.topic = topic;
         if (type) {
             guild.type = type;
-            if (type === 'private' && !guild.inviteToken) {
-                guild.inviteToken = crypto.randomBytes(20).toString('hex');
-            }
+        }
+
+        // Ensure guild always has an invite token
+        if (!guild.inviteToken) {
+            guild.inviteToken = crypto.randomBytes(20).toString('hex');
         }
         
         if (req.file) {
