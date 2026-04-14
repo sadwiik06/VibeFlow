@@ -464,6 +464,9 @@ const ReelsPageWithKeys = (props) => {
 
   useEffect(() => {
     const onKey = (e) => {
+      // Don't intercept keys if user is typing in an input or textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
       const container = document.querySelector('.rp-scroller');
       if (!container) return;
       if (e.code === 'ArrowDown' || e.code === 'KeyJ') {
