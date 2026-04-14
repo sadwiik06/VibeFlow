@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../apiConfig';
@@ -12,6 +13,7 @@ const ChatPage = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { socket } = useChat();
+  const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -193,10 +195,10 @@ const ChatPage = () => {
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
               </div>
-              <h3>Your messages</h3>
-              <p>Send a message to start a conversation.</p>
-              <button className="chat-empty-btn" onClick={() => {}}>
-                Send message
+              <h3>Select a conversation</h3>
+              <p>Search and message a known profile or message someone from feed</p>
+              <button className="chat-empty-btn" onClick={() => navigate('/explore')}>
+                Search User
               </button>
             </div>
           )}
