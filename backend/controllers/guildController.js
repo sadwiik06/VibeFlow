@@ -49,7 +49,8 @@ const createGuild = async (req, res) => {
 const getPublicGuilds = async (req, res) => {
     try {
         const { topic, search } = req.query;
-        const filter = {};
+        // Only ever return public guilds — private guilds are invite-only and hidden
+        const filter = { type: 'public' };
         if (topic) filter.topic = topic;
         if (search) {
             filter.$or = [
