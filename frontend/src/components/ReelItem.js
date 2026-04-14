@@ -19,6 +19,7 @@ const ReelItem = ({ reel, isActive, watchSessionId, onSyncAction }) => {
     const videoRef = useRef(null);
     const token = localStorage.getItem('token');
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchLikes();
         fetchComments();

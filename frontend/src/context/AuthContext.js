@@ -17,9 +17,9 @@ export const AuthProvider = ({children})=>{
 
             }).then((res)=>{
                 setUser(res.data);
-            }) .catch(()=>{
+            }).catch(()=>{
                 localStorage.removeItem('token');
-            }) .finally(()=>setLoading(false));
+            }).finally(()=>setLoading(false));
         }else{
             setLoading(false);
         }

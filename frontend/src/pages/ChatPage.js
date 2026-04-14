@@ -14,6 +14,7 @@ const ChatPage = () => {
   const { socket } = useChat();
   const token = localStorage.getItem('token');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchConversations(); }, []);
 
   useEffect(() => {
@@ -41,14 +42,6 @@ const ChatPage = () => {
   };
 
   const handleSelectConversation = (conv) => setSelectedConversation(conv);
-
-  const startNewConversation = async (userId) => {
-    try {
-      const res = await axios.post(`${API_BASE_URL}/api/chat/conversations`, { userId }, { headers: { Authorization: `Bearer ${token}` } });
-      if (!conversations.find(c => c._id === res.data._id)) setConversations([res.data, ...conversations]);
-      setSelectedConversation(res.data);
-    } catch (err) { console.error(err); }
-  };
 
   return (
     <>
