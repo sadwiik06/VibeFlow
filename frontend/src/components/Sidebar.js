@@ -298,7 +298,7 @@ const Sidebar = ({ onOpenCreate }) => {
                     <span className="sb-item-icon">{item.icon(isActive)}</span>
                     <span className="sb-item-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       {item.label}
-                      {item.label === 'Guilds' && <span style={{ background: 'var(--brand-grad)', color: '#fff', fontSize: '9px', fontWeight: '800', padding: '2px 5px', borderRadius: '4px', letterSpacing: '0.5px' }}>NEW</span>}
+                      {item.label === 'Guilds' && <span style={{ background: '#0A0A0A', color: '#fff', fontSize: '9px', fontWeight: '800', padding: '2px 5px', borderRadius: '4px', letterSpacing: '0.5px' }}>NEW</span>}
                     </span>
                     {item.path === '/notifications' && <span className="sb-badge">3</span>}
                   </>

@@ -5,7 +5,8 @@ const {
     getFeed,
     getUserPosts,
     getReels,
-    deletePost
+    deletePost,
+    getPostById
 } = require('../controllers/postController');
 
 const { protect } = require('../middleware/authMiddleware');
@@ -17,6 +18,7 @@ router.route('/').post(protect, upload.single('media'), createPost);
 router.get('/feed', protect, getFeed);
 router.get('/reels', protect, getReels);
 router.get('/user/:userId', protect, getUserPosts);
+router.get('/:postId', protect, getPostById);
 router.delete('/:postId', protect, deletePost);
 
 module.exports = router;

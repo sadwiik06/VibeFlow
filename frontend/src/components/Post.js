@@ -28,16 +28,7 @@ const ShareIcon = () => (
   </svg>
 );
 
-const BookmarkIcon = ({ saved }) =>
-  saved ? (
-    <svg aria-label="Remove" viewBox="0 0 24 24" width="24" height="24">
-      <path fill="currentColor" d="M20 3H4v18l8-5.5L20 21V3z"/>
-    </svg>
-  ) : (
-    <svg aria-label="Save" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-    </svg>
-  );
+
 
 const MoreIcon = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -91,7 +82,7 @@ const Post = ({ post, onDelete }) => {
   const { user } = useAuth();
   const [liked, setLiked]           = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [saved, setSaved]           = useState(false);
+
   const [comments, setComments]     = useState([]);
   const [commentText, setCommentText] = useState('');
   const [showAllComments, setShowAllComments] = useState(false);
@@ -504,12 +495,7 @@ const Post = ({ post, onDelete }) => {
           </button>
           <button className="act-btn" onClick={handleShare}><ShareIcon /></button>
           <div className="spacer" />
-          <button
-            className={`act-btn${saved ? ' saved' : ''}`}
-            onClick={() => setSaved(!saved)}
-          >
-            <BookmarkIcon saved={saved} />
-          </button>
+
         </div>
 
         {/* ── Likes count ── */}

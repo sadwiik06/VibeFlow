@@ -13,8 +13,9 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         if (user) {
+            const token = localStorage.getItem('token');
             const newSocket = io(API_BASE_URL, {
-                query: { userId: user._id },
+                auth: { token },
             });
 
             newSocket.on('connect', () => {

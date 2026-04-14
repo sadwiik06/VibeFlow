@@ -163,6 +163,20 @@ const getReels = async (req, res) => {
     }
 };
 
+const getPostById = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId)
+            .populate('user', 'username profilePicture');
+        
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json(post);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const deletePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.postId);
@@ -183,4 +197,4 @@ const deletePost = async (req, res) => {
     }
 };
 
-module.exports = { createPost, getFeed, getUserPosts, getReels, deletePost };
+module.exports = { createPost, getFeed, getUserPosts, getReels, deletePost, getPostById };

@@ -18,6 +18,7 @@ import Layout from './components/Layout';
 import ExplorePage from './pages/ExplorePage';
 import NotificationsPage from './pages/NotificationsPage';
 import LandingPage from './pages/LandingPage';
+import PostPage from './pages/PostPage';
 import './styles/global.css';
 
 const AppContent = () => {
@@ -41,6 +42,7 @@ const AppContent = () => {
       } />
 
       <Route path="/profile/:username" element={<PrivateRoute><Layout><ProfilePage /></Layout></PrivateRoute>} />
+      <Route path="/post/:postId" element={<PrivateRoute><Layout><PostPage /></Layout></PrivateRoute>} />
       <Route path="/accounts/edit" element={<PrivateRoute><Layout><EditProfilePage /></Layout></PrivateRoute>} />
       <Route path="/guilds" element={<PrivateRoute><Layout><GuildsPage /></Layout></PrivateRoute>} />
       <Route path="/guilds/:guildId" element={<PrivateRoute><Layout><GuildDetailPage /></Layout></PrivateRoute>} />
