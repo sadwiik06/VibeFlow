@@ -43,21 +43,6 @@ const Tag = ({ children, color = '#6C63FF', bg }) => (
     }}>{children}</span>
 );
 
-/* Avatar stack */
-const AvatarStack = ({ colors, label }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ display: 'flex' }}>
-            {colors.map((c, i) => (
-                <div key={i} style={{
-                    width: 30, height: 30, borderRadius: '50%',
-                    background: c, border: '2.5px solid #fff',
-                    marginLeft: i > 0 ? -10 : 0, flexShrink: 0,
-                }} />
-            ))}
-        </div>
-        {label && <span style={{ fontSize: 13, color: '#7A7A7A', fontWeight: 500 }}>{label}</span>}
-    </div>
-);
 
 /* Phone frame */
 const Phone = ({ children, style = {} }) => (
@@ -73,22 +58,6 @@ const Phone = ({ children, style = {} }) => (
     </div>
 );
 
-/* Bento cell */
-const Cell = ({ children, span = 1, dark, accent, style = {} }) => (
-    <div style={{
-        gridColumn: `span ${span}`,
-        background: dark ? '#0A0A0A' : accent ? accent : '#fff',
-        border: dark || accent ? 'none' : '1px solid #E4E4E2',
-        borderRadius: 22,
-        padding: '28px 28px',
-        overflow: 'hidden',
-        position: 'relative',
-        transition: 'border-color 0.18s',
-        ...style,
-    }}>
-        {children}
-    </div>
-);
 
 /* Marquee strip */
 const Marquee = ({ items }) => {
@@ -185,12 +154,10 @@ const FeatureCard = ({ icon, title, desc, accent, tag, fun }) => {
 ───────────────────────────────────────── */
 const LandingPage = () => {
     const [scrollY, setScrollY] = useState(0);
-    const [heroVisible, setHeroVisible] = useState(false);
 
     useEffect(() => {
         const onScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', onScroll, { passive: true });
-        setTimeout(() => setHeroVisible(true), 60);
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
@@ -558,7 +525,7 @@ const LandingPage = () => {
 
              
                 <nav className={`lp-nav ${scrollY > 20 ? 'up' : ''}`}>
-                    <a href="#" className="lp-logo">
+                    <a href="/" className="lp-logo">
                         <div className="lp-logo-mark">
                             <svg viewBox="0 0 14 14" fill="none">
                                 <path d="M7 1L12.5 4.5V10.5L7 14L1.5 10.5V4.5L7 1Z" fill="white" />
@@ -938,7 +905,7 @@ const LandingPage = () => {
 
                 {/* ──────────── FOOTER ──────────── */}
                 <footer className="lp-foot">
-                    <a href="#" className="lp-logo" style={{ fontSize: 16 }}>
+                    <a href="/" className="lp-logo" style={{ fontSize: 16 }}>
                         <div className="lp-logo-mark" style={{ width: 24, height: 24, borderRadius: 6 }}>
                             <svg viewBox="0 0 14 14" fill="none" style={{ width: 11, height: 11 }}>
                                 <path d="M7 1L12.5 4.5V10.5L7 14L1.5 10.5V4.5L7 1Z" fill="white" />

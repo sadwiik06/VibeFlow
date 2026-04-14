@@ -43,6 +43,7 @@ const GuildDetailPage = () => {
     fetchGuild();
     if (socket) socket.emit('join guild', guildId);
     return () => { if (socket) socket.emit('leave guild', guildId); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guildId, socket]);
 
   const fetchGuild = async () => {

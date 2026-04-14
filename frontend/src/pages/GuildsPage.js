@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../apiConfig';
 
 const ACCENT_PALETTES = [
@@ -53,7 +52,6 @@ const GuildCard = ({ guild }) => {
 };
 
 const GuildsPage = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [guilds, setGuilds] = useState([]);
   const [myGuilds, setMyGuilds] = useState([]);
@@ -65,6 +63,7 @@ const GuildsPage = () => {
   const [form, setForm] = useState({ name: '', description: '', topic: '', type: 'public' });
   const token = localStorage.getItem('token');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchGuilds(); fetchMyGuilds(); }, []);
 
   const fetchGuilds = async () => {
