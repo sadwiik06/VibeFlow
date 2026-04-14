@@ -17,7 +17,7 @@ const ProfilePage = () => {
   const [followStatus, setFollowStatus] = useState('none');
   const [followLoading, setFollowLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
-  const [hoveredPost, setHoveredPost] = useState(null);
+
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -25,25 +25,25 @@ const ProfilePage = () => {
   const token = localStorage.getItem('token');
   const config = { headers: { Authorization: `Bearer ${token}` } };
 
-  const fetchProfile = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/users/${username}`, config);
-      setProfile(res.data);
-      setFollowStatus(res.data.followStatus || 'none');
-      const postRes = await axios.get(`${API_BASE_URL}/api/posts/user/${res.data._id}`, config);
-      setPosts(postRes.data.posts || []);
-      setIsAccountPrivate(postRes.data.isPrivate || false);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => { 
     setLoading(true); 
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/users/${username}`, config);
+        setProfile(res.data);
+        setFollowStatus(res.data.followStatus || 'none');
+        const postRes = await axios.get(`${API_BASE_URL}/api/posts/user/${res.data._id}`, config);
+        setPosts(postRes.data.posts || []);
+        setIsAccountPrivate(postRes.data.isPrivate || false);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load profile');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchProfile(); 
     setSelectedPost(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, activeTab]);
 
   const handleFollow = async () => {

@@ -88,6 +88,19 @@ const ReelsPage = () => {
     return () => observer.disconnect();
   }, [reels, hasMore, page, inSession, socket, watchSessionId, fetchReels]);
 
+  const scrollToReel = useCallback((idx) => {
+    setActiveIndex(idx);
+    isAutoScrolling.current = true;
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    
+    const el = containerRef.current?.querySelector(`[data-index="${idx}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+
+    scrollTimeoutRef.current = setTimeout(() => {
+        isAutoScrolling.current = false;
+    }, 1000);
+  }, []);
+
   /* Watch party socket listeners */
   useEffect(() => {
     if (!socket) return;
@@ -113,20 +126,7 @@ const ReelsPage = () => {
       socket.off('watch guest joined');
       socket.off('watch guest left');
     };
-  }, [socket, watchSessionId]);
-
-  const scrollToReel = useCallback((idx) => {
-    setActiveIndex(idx);
-    isAutoScrolling.current = true;
-    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    
-    const el = containerRef.current?.querySelector(`[data-index="${idx}"]`);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-
-    scrollTimeoutRef.current = setTimeout(() => {
-        isAutoScrolling.current = false;
-    }, 1000);
-  }, []);
+  }, [socket, watchSessionId, scrollToReel]);
 
   const handleStartParty = () => {
     if (!socket) return;
@@ -461,7 +461,6 @@ const ReelsPage = () => {
 
 /* ── Keyboard shortcuts ── */
 const ReelsPageWithKeys = (props) => {
-  const pageRef = useRef(null);
 
   useEffect(() => {
     const onKey = (e) => {

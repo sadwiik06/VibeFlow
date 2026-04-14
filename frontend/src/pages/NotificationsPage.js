@@ -8,20 +8,20 @@ const NotificationsPage = () => {
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem('token');
 
-  const fetchFollowRequests = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/users/follow-requests`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setRequests(res.data);
-    } catch (err) {
-      console.error('Error fetching follow requests', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchFollowRequests = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/users/follow-requests`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setRequests(res.data);
+      } catch (err) {
+        console.error('Error fetching follow requests', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchFollowRequests();
   }, [token]);
 

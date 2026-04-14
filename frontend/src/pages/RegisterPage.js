@@ -32,7 +32,7 @@ const RegisterPage = () => {
     <StyledWrapper>
       <div className="container">
         <div className="card">
-          <a className="login">Sign up</a>
+          <div className="login">Sign up</div>
 
           {error && <p className="error-msg">{error}</p>}
 
