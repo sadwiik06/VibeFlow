@@ -28,7 +28,7 @@ const LoginPage = () => {
     <StyledWrapper>
       <div className="container">
         <div className="card">
-          <a className="login">Log in</a>
+          <div className="login">Log in</div>
 
           {error && <p className="error-msg">{error}</p>}
 
