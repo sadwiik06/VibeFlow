@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import './Layout.css';
+import CreatePost from './CreatePost';
 
 const Layout = ({ children }) => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-    const closeSidebar = () => setSidebarOpen(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    return (
-        <div className="app-layout">
-            <div className={`sidebar-overlay ${sidebarOpen ? 'visible' : ''}`} onClick={closeSidebar} />
-            <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <main className="main-content">
-                {children}
-            </main>
-        </div>
-    );
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#FAFAFA' }}>
+      <Sidebar onOpenCreate={() => setIsCreateOpen(true)} />
+      <main style={{ flex: 1, minWidth: 0 }}>
+        {children}
+      </main>
+      <CreatePost hideTrigger forceOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onPostCreated={() => setIsCreateOpen(false)} />
+    </div>
+  );
 };
 
 export default Layout;

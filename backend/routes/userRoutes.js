@@ -19,6 +19,7 @@ router.get('/follow-requests', protect, getFollowRequests);
 router.post('/follow-requests/:requestId/accept', protect, acceptFollowRequest);
 router.post('/follow-requests/:requestId/reject', protect, rejectFollowRequest);
 router.get('/search', protect, searchUsers);
+router.get('/suggestions', protect, require('../controllers/userController').getSuggestions);
 // Dynamic param routes
 router.get('/:username', protect, getUserProfile);
 router.post('/:id/follow', protect, followUser);

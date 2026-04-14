@@ -49,7 +49,7 @@ const createGuild = async (req, res) => {
 const getPublicGuilds = async (req, res) => {
     try {
         const { topic, search } = req.query;
-        const filter = { type: 'public' };
+        const filter = {};
         if (topic) filter.topic = topic;
         if (search) {
             filter.$or = [
@@ -340,6 +340,12 @@ const transferOwnership = async (req, res) => {
         await GuildMember.findOneAndUpdate(
             { guild: guild._id, user: newOwnerId },
             { role: 'admin' }
+        );
+        
+        // Downgrade old owner to member
+        await GuildMember.findOneAndUpdate(
+            { guild: guild._id, user: req.user._id },
+            { role: 'member' }
         );
         
         res.json({ message: 'Ownership transferred' });

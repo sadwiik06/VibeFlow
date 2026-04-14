@@ -12,11 +12,13 @@ const createPost = async (req, res) => {
             return res.status(400).json({ message: 'Media file is required' });
         }
 
+        const resourceType = req.file.mimetype.startsWith('video/') ? 'video' : 'image';
+
         const result = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     folder: 'SocialMedia/posts',
-                    resource_type: type === 'reel' ? 'video' : 'image',
+                    resource_type: resourceType,
                 },
                 (error, result) => {
                     if (error) reject(error);
@@ -36,6 +38,17 @@ const createPost = async (req, res) => {
         });
 
         await post.populate('user', 'username profilePicture');
+
+        // Emit real-time event to all connected clients
+        const io = req.app.get('io');
+        if (io) {
+            if (type === 'reel') {
+                io.emit('new reel', post);
+            } else {
+                io.emit('new feed post', post);
+            }
+        }
+
         res.status(201).json(post);
 
     } catch (error) {
@@ -68,6 +81,7 @@ const getFeed = async (req, res) => {
         const allowedUserIds = [req.user._id, ...followingIds];
 
         const query = {
+            type: 'post',
             $or: [
                 { user: { $in: allowedUserIds } },
                 { user: { $nin: privateUserIds } }
@@ -149,4 +163,24 @@ const getReels = async (req, res) => {
     }
 };
 
-module.exports = { createPost, getFeed, getUserPosts, getReels };
+const deletePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if user is the author of the post
+        if (post.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'User not authorized to delete this post' });
+        }
+
+        await post.deleteOne();
+        res.json({ message: 'Post removed' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { createPost, getFeed, getUserPosts, getReels, deletePost };

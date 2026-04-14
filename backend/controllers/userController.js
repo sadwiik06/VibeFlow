@@ -27,23 +27,34 @@ const getUserProfile = async (req, res) => {
             }
         }
 
+        let isFollowedBy = false;
+        if (req.user && !isOwner) {
+            const followedBy = await Follow.exists({
+                follower: user._id,
+                following: req.user._id,
+                status: 'accepted'
+            });
+            isFollowedBy = !!followedBy;
+        }
+
         const isFollowing = followStatus === 'accepted';
         const canViewFullProfile = isOwner || !user.isPrivate || isFollowing;
+        const canViewLists = isOwner || (isFollowing && isFollowedBy);
 
         const postsCount = await Post.countDocuments({ user: user._id });
         const userData = user.toObject();
         userData.isFollowing = isFollowing;
         userData.followStatus = followStatus;
         userData.postsCount = postsCount;
+        userData.canViewLists = canViewLists;
 
         if (canViewFullProfile) {
-            // Full access — show followers/following lists
             const follows = await Follow.find({
                 $or: [
                     { follower: user._id, status: 'accepted' },
                     { following: user._id, status: 'accepted' }
                 ]
-            }).populate('follower following', 'username profilePicture');
+            }).populate('follower following', 'username profilePicture fullName');
 
             userData.followers = follows
                 .filter(f => f.following._id.toString() === user._id.toString())
@@ -51,16 +62,21 @@ const getUserProfile = async (req, res) => {
             userData.following = follows
                 .filter(f => f.follower._id.toString() === user._id.toString())
                 .map(f => f.following);
+
+            if (!canViewLists) {
+                userData.followersCount = userData.followers.length;
+                userData.followingCount = userData.following.length;
+                userData.followers = [];
+                userData.following = [];
+            }
         } else {
-            // Private account, not following — hide everything
-            // Only show username, profile picture, and that it's private
             const followersCount = await Follow.countDocuments({ following: user._id, status: 'accepted' });
             const followingCount = await Follow.countDocuments({ follower: user._id, status: 'accepted' });
 
             userData.fullName = undefined;
             userData.bio = undefined;
             userData.website = undefined;
-            userData.postsCount = postsCount; // Instagram shows post count even for private
+            userData.postsCount = postsCount;
             userData.followers = [];
             userData.following = [];
             userData.followersCount = followersCount;
@@ -256,6 +272,17 @@ const searchUsers = async (req, res) => {
     }
 };
 
+const getSuggestions = async (req, res) => {
+    try {
+        const users = await User.find({ _id: { $ne: req.user._id } })
+            .select('username fullName profilePicture')
+            .limit(5);
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getUserProfile,
     updateProfile,
@@ -264,4 +291,5 @@ module.exports = {
     acceptFollowRequest,
     rejectFollowRequest,
     searchUsers,
+    getSuggestions,
 };

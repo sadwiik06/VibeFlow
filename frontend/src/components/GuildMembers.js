@@ -21,7 +21,7 @@ const GuildMembers = ({ guild, onRefresh, canManage }) => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
       <h3>Members ({guild.memberCount})</h3>
       <div>
         {guild.members.map(member => (
